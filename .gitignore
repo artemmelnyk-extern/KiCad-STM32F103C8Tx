@@ -1,0 +1,25 @@
+# KiCad lock files
+*.lck
+
+# KiCad backup files
+*.bak
+*.bck
+*_autosave*
+
+# KiCad backup directories
+*-backups/
+
+# KiCad local settings (machine-specific)
+*.kicad_prl
+
+# fp-info-cache (auto-generated footprint cache)
+fp-info-cache
+
+# Fabrication outputs (Gerbers, drill files, etc.)
+# Uncomment if you don't want to track these:
+# gerbers/
+# fab/
+# output/
+
+# KiCad simulator data
+*.raw
