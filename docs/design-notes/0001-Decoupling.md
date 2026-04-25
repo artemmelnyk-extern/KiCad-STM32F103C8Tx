@@ -6,6 +6,23 @@
 
 ---
 
+## Bill of Materials (machine-readable)
+
+| Ref | Value | lib_id | Footprint | Datasheet |
+|-----|-------|--------|-----------|-----------|
+| U1  | STM32F103C8T6 | MCU_ST_STM32F1:STM32F103C8Tx | Package_QFP:LQFP-48_7x7mm_P0.5mm | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| FB1 | 120R | Device:FerriteBead | Inductor_SMD:L_0402_1005Metric | ~ |
+| C1  | 100n | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C2  | 100n | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C3  | 100n | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C4  | 100n | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C5  | 10u  | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C6  | 10n  | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C7  | 1u   | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+| C8  | 1u   | Device:C | Capacitor_SMD:C_0402_1005Metric | ~ |
+
+---
+
 ## Context
 
 The STM32F103C8T6 (LQFP-48) has two separate supply domains that require independent
