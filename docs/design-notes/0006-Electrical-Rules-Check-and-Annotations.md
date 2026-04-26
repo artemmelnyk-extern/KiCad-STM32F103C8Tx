@@ -10,8 +10,9 @@
 
 This revision makes no functional or component changes. It resolves all KiCad Electrical
 Rules Check (ERC) violations, adds schematic title block metadata, adds in-schematic
-annotation text, and repositions several components within the power supply area for
-improved readability.
+annotation text, repositions several components within the power supply area for improved
+readability, and re-annotates all capacitors and resistors in positional (left-to-right,
+top-to-bottom) order.
 
 ---
 
@@ -139,6 +140,45 @@ preference block only.
 
 ---
 
+## 6 — Component Re-annotation (Positional Ordering)
+
+KiCad's **Tools → Re-Annotate Schematic** was run with positional (left-to-right,
+top-to-bottom) sorting. This assigns reference numbers in the order components appear
+on the sheet, making it easier to cross-reference the schematic with a physical board.
+
+No values, footprints, or net connections changed — only the reference designators.
+
+### Capacitor Re-annotation
+
+| Old Ref | New Ref | Value  | Circuit / Function                        | Design note |
+|---------|---------|--------|-------------------------------------------|-------------|
+| C1      | C7      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C2      | C6      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C3      | C5      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C5      | C3      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C6      | C8      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C7      | C9      | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C8      | C10     | 100 nF | VDD decoupling (MCU)                      | 0001 |
+| C9      | C11     | 100 nF | NRST filter capacitor                     | 0002 |
+| C10     | C13     | 22 pF  | Crystal load capacitor (HSE, Y1 side)     | 0003 |
+| C11     | C12     | 22 pF  | Crystal load capacitor (MCU, Y1 side)     | 0003 |
+| C12     | C2      | 22 µF  | VBUS input bulk cap (U2 VI side)          | 0005 |
+| C13     | C1      | 22 µF  | +3.3V output bulk cap (U2 VO side)        | 0005 |
+
+### Resistor Re-annotation
+
+| Old Ref | New Ref | Value  | Circuit / Function                        | Design note |
+|---------|---------|--------|-------------------------------------------|-------------|
+| R1      | R2      | 10 kΩ  | BOOT0 series resistor                     | 0002 |
+| R2      | R3      | 1.5 kΩ | USB D+ pull-up                            | 0004 |
+| R3      | R1      | 1.5 kΩ | Power LED current-limiting resistor       | 0005 |
+
+> **Note for cross-referencing earlier design notes:** Design notes 0001–0005 use the
+> old reference designators. The table above is the authoritative mapping. All subsequent
+> notes use the new (post-re-annotation) references.
+
+---
+
 ## Checklist: Changes with No Functional Impact
 
 | Change type                | Functional impact | BOM impact | PCB footprint impact |
@@ -149,3 +189,4 @@ preference block only.
 | Component repositioning    | None              | No         | None (only schematic coords) |
 | Wire/junction rerouting    | None              | No         | None |
 | ngspice project settings   | None              | No         | None |
+| Reference re-annotation    | None              | No (same components) | None |
