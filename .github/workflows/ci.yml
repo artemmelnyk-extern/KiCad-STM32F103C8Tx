@@ -1,0 +1,57 @@
+name: KiCad CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  erc:
+    name: Electrical Rules Check
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/inti-cmnb/kicad_auto:ki9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ERC
+        run: kicad-cli sch erc tproject.kicad_sch --exit-code-violations
+      - name: Upload ERC report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erc-report
+          path: "*.rpt"
+          retention-days: 7
+
+  drc:
+    name: Design Rules Check
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/inti-cmnb/kicad_auto:ki9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run DRC
+        run: kicad-cli pcb drc tproject.kicad_pcb --exit-code-violations
+      - name: Upload DRC report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drc-report
+          path: "*.rpt"
+          retention-days: 7
+
+  schematic-pdf:
+    name: Export Schematic PDF
+    runs-on: ubuntu-latest
+    needs: [erc]
+    container:
+      image: ghcr.io/inti-cmnb/kicad_auto:ki9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export PDF
+        run: kicad-cli sch export pdf tproject.kicad_sch -o docs/tproject-schematic.pdf
+      - name: Upload schematic PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: schematic-pdf
+          path: docs/tproject-schematic.pdf
+          retention-days: 30
