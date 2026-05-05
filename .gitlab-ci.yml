@@ -1,0 +1,34 @@
+image: ghcr.io/inti-cmnb/kicad_auto:ki9
+
+stages:
+  - check
+  - export
+
+erc:
+  stage: check
+  script:
+    - kicad-cli sch erc tproject.kicad_sch --exit-code-violations
+  artifacts:
+    when: always
+    paths:
+      - "*.rpt"
+    expire_in: 7 days
+
+drc:
+  stage: check
+  script:
+    - kicad-cli pcb drc tproject.kicad_pcb --exit-code-violations
+  artifacts:
+    when: always
+    paths:
+      - "*.rpt"
+    expire_in: 7 days
+
+schematic-pdf:
+  stage: export
+  script:
+    - kicad-cli sch export pdf tproject.kicad_sch -o docs/tproject-schematic.pdf
+  artifacts:
+    paths:
+      - docs/tproject-schematic.pdf
+    expire_in: 30 days
