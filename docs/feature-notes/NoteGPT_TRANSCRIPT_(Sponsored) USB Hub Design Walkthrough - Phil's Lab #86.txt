@@ -1,0 +1,200 @@
+https://www.youtube.com/watch?v=iR2hYpq0KI0
+
+00:00:00
+in this video I'll show you how to make your own USB 2.0 high speed Hub and how to incorporate USB hub ICS into your own projects we'll look at the system overview as well as dive into the schematic and PCB design if you haven't already it would really help me out if you subscribe to the channel I see we've had about 134 000 unique viewers I've got many different PCB design videos on my channel grouped in a playlist as well as DSP audio electronics and many more videos to come
+
+00:00:30
+of course in this video I'll show you how to design your own USB hub going through all the basics looking the block diagram schematics and then finally PCB design and what to watch out for USB hubs I'm sure you're very familiar with their devices that expand one single connector or one single USB interface into an array of several connectors or interfaces so we can go from one host connector into for example four device connectors so to speak USB hubs come in various flavors commercially you can get
+
+00:00:58
+them for not very much money typically you'll have some sort of host connection which is a USB a mail connection to for example four USB a female connections and they'll come in USBC various different standards and so on in this video we're going to be looking at a USP 2.0 high speed connection with four ports and then one additional Port which goes to a host not only is this useful for making a USB hub if you want to try it and make one for yourself can of course be quite interesting but a lot of
+
+00:01:23
+times projects will require multiple USB connections for example a while ago I was working on an Nvidia Savio carrier board and the particular system on chip only had one USB 2.0 connection I had multiple different USB devices so I needed to use one of these ICS which we'll look at in this video to expand this one port into several Downstream ports so to speak one of my favorite ICS and the one I actually used is this USB 2514 by microchip now these come in various flavors you can get them a two
+
+00:01:52
+Port three port four port and I believe even more but we're going to be looking at the four port variant which is indicated by this fourth digit over here this is a USB 2 high speed Hub it's very easy to configure as well C and I'll guide you through the design process thank you very much to Alton for sponsoring this video I used Autumn designer to design this USB hub demo board which will examine this video if you'd like to give Alton design a try for yourself you can go to alton.com
+
+00:02:17
+forward slash YT forward slash fills lab or follow the link in the description to get yourself an Alton designer free trial to make things a bit easier before we move on to the schematic where we then add more detail let's have a look at this USB hub system overview and I've made a little block diagram the center's piece is of course our USB 2.0 high speed Hub which is the microchip USB 2514b this requires a connection to a host and this will be the data connection the main data connection
+
+00:02:46
+which we then Branch out to several slaves for this I quite like micro b I know USBC is quite popular as well these days and of course you're free to choose whatever you want we're talking to a host via micro b we can plug in a cable we have a differential data pair and we also have a v Buster tag bin for this USB hub to tell the Hub okay we've connected a host to run this Hub we also need power and instead of getting this from the micro b connector because we have quite large current consumption
+
+00:03:11
+requirements because we are using four slaves on the right hand side I'm also adding a DC Barrel Jack and this will be nominally at 5 volts and we need to supply about two and a half amps maximum current then of course the USB hub typically works on three front three volts so we need another regulator and five volt to 3.3 volt because this regulator doesn't draw very much current an ldo or low Dropout linear regulator is perfectly fine we don't really need to use a switching device simplifies our
+
+00:03:37
+design considerably on the other side of this USB hub then of course we have all the device connections so we want to have the host talk to several devices so we need to Branch out in this case four times so we have four times the same circuitry for four devices again we have differential data pair connections going to a USB a female and USB a female is pretty much the standard for device connections coming from a host but we also have this load switch which you see here according to the USB standard
+
+00:04:04
+without negotiation for USB 2.0 we can draw about 150 milliamps however the device can negotiate with a host and true and then draw up to 500 milliamps but not more therefore we need a load switch which limits the current to the device after negotiation so the load switch will clamp at a maximum of 500 milliamps at 5 volts but it also has various signals to which it can talk to the USB hub with one is the naval signal so the USB hub after negotiation can say okay let's enable this load switch let's
+
+00:04:32
+enable the 5 volts on this port but the load switch can also talk to the USB hub essentially by one gpio and this is an over current or OC flag pin so anytime there's an over current problem we want to let the USB hub know all in all it's actually a pretty simple connection we have data and power and the power is coming from our DC Barrel Jack as we said before and this circuitry is simply multiplied another three times so we have one two three and four devices that's almost all we need for our USB
+
+00:05:00
+hub but we also need some configuration as well as some sort of timing source for this USB hub the timing saw typically for these hubs is a 24 megahertz Crystal even though you could also use a CMOS oscillator the other part to this is either an eprom or what's known as strapping resistors connected to strapping pins of this USB hub in essence when this USB hub first boots up it'll sample the eprom or it will sample the state of certain gpios and then configure itself in different modes this could be the amount of
+
+00:05:28
+devices that allowed to be connected it could be if this is self-powered or if this is bus powered in our case this is self-powered because we have an additional DC Barrel Jack and so on but it can also include the IDS and pids so vendor IDs and product IDs which are part of the USB 2 standard but in our case you want to make it just a simple design so we won't be using an eprom we'll just be pulling the gpio's high and low with strapping resistors and we'll go into more detail later on but
+
+00:05:52
+overall it's actually a fairly simple system and something you can easily Implement in your own designs so let's move over to Autumn designer and check out the schematic before we move on to the PCB design here we are now in Autumn designer and again all these tips and tricks for making this USB hub can be applied to any ecard software I happen to be using Autumn designer of course I've put this schematic because it's fairly simple on one single page this is just a demo project this is just meant to be a
+
+00:06:16
+general rough guideline of how to implement a device like this of course this will depend on what your project requirements are what connectors you use if it's part of a bigger system and so on but take this as a rough starting point now we'll go into a bit more detail zooming into the top left of the schematic we have our five volt input from the DC Barrel Jack going into a three volt regulator I always like to filter my DC power lines which aren't high-speed digital power lines with a pi
+
+00:06:40
+filter Pi filter because it's the shape of the Greek letter Pi we have C1 and C2 with a series element which is a ferret bead now I'm planning on making a thoroughbred video because that can be a bit more difficult to choose there are many different things you need to think about when choosing ferret beads but just think of this as some sort of low pass filter for now because we're drawing two and a half amps maximum or maybe slightly less than that we want to raise our ferret bead quite a lot higher
+
+00:07:04
+than that I've put three amps here but typically want to go even higher than that so you want to choose a fairly chunky series element because ferret beads get derated fairly quickly at higher currents then we have our 5 volts filtered so to speak and that feeds into a linear regulator 5 volts in 3.3 volts out again bypass capacitor C3 and C4 as well as we have this bypass pin here for this specific regulator and that helps reduce the output noise of this regulator I like to have a status on LED
+
+00:07:31
+for these kind of tests or demo boards so this is just a green diode with a current limiting resistor we can see though that we have this one pin branching off which is the naval signal to this 3.3 Rod regulator and that goes off to a net name called vbas debt or vbas detect I only want this regulator to turn on once we've plugged in a host so the Hub doesn't turn on beforehand and we'll see this v-bar detect pin where this comes from in just a second when we look at the USB hub schematic so
+
+00:07:58
+let's jump down to this schematic over here it might look more involved but it's very very simple we have the host marker B connection on the left we have the USB hub in the middle and the full USB a ports on the right hand side for all the device connections the load switches I've put up above and we'll look at those at the end starting on the left hand side we have our host connection micro b as I said again you can use any connector or if it's on on a board device you might not need a
+
+00:08:21
+connector you might be just connecting this to a system on chip microcontroller or so on I like to give all of my Nets labels and I think that's a good practice because this makes your PCB design life a lot easier as well as adding Flags but this is a differential pair because you want to try out to a designer or your ecard software to root them as differential pairs later on the top we have a pi filter again capacitor third read capacitor even though we're not using this 5 volts from the host
+
+00:08:44
+very much I always think it's good practice to do so I've added in ESD protection this USB lc6-2sc6 is fairly common part with the USB high speed specific TVs diode array we're protecting data lines as well as the power line as well you might also have noticed this shield and ground connection here and this really depends and there's quite a big topic of debate how do you connect your Shield do you connect your Shield ground to system ground do you get its chassis ground and so on and this really really depends on
+
+00:09:12
+the scenario so I've put the most generic case here where we're simply coupling The Shield or chassis ground via a capacitor to our system ground now if you have a fully mid metallic enclosure your Shield would connect to the chassis ground in certain cases you might want to leave your Shield floating and so on it depends on enclosure it depends on your specific system I've just put a fairly generic case here or Simply Having a gap between Shield ground and our system ground again it
+
+00:09:36
+really depends on the scenario moving on looking at the Hub I see we're feeding the host differential pair into a hub and this is on the left side here this is our Upstream Port so to speak and the four devices are Downs to import so to speak we have various power connections with vdd 3.3 and vdda which the analog side 2.3 and the data sheet and the evaluation boards just simply recommend tying this Auto 3.3 volts no additional filtering and of course 100 nanofara capacitor per vdd or per Power Pin and
+
+00:10:04
+they've added a 2.2 microfarad capacitor as bulk decoupling above these power pins we have this vbus debt or viosotech pin which we saw earlier because this is a 3.3 volt device this USB hub and we can't just simply hook up our 5 volts directly to the vbos deck pin from our host connection we're dividing it down by two 100K resistors now this signal is also fed to our linear regulator the 3.3 volts to turn this on we have various other filtering Parts here for example a PLL Paris filtering circuitry and this
+
+00:10:33
+is taken directly from the data sheet what capacitor values we need and so on if you think back to the block diagram we also need a crystal source and this happens to be a 24 megahertz Crystal oscillator with this standard circuitry here so load capacitors a feedback resistor in case we need one however the data sheet says for this specific device it contains an internal one Mega ohm feedback resistor r21 in this case so I've just put it as a do not place part the load capacitance so it's c28 and the
+
+00:10:58
+value of c29 depend on the actual Crystal chosen I put the format here for this particular 24 megahertz Crystal I've chosen the crystal capacitance load capacitance is 9 picofarad I'm assuming around four Pico farads of stray capacitance subtract those two numbers multiply them by two which gives us about 10 picofarads for c28 and c29 and this is a fairly typical calculation all the parts of the circuitry taken directly from the data sheet are for example this R bias pin which is fairly
+
+00:11:24
+important which is a bias resistor 12 kilo ohms to ground other than that let's look at those strapping pins now where these pins 24 25 28 and 22 which have various different names for the same pin so it could be for example a clock pin for an i squared C or two wire line and then we have the SDA pin down here but we also have these config select zero config select one and so on if you think back to the block diagram this was this part down here where we could either use an eprom or strapping
+
+00:11:51
+resistors depending on if you want to change vends pids have more specific settings and so forth in our case this is a very simple example I'm simply using strapping pins again taking things from the data sheet and always like to put comments on the schematic which you see in this blue text up here why I've pulled certain pins high and low it turns out again from the data sheet that the configs like pins so cell 0 and cell one if we pull them both low we're using the strapping options we're setting this
+
+00:12:17
+Hub as a self-powered device because we're using external power we have individual power switching for the ports so again this has to do with the load switching and individual over current sensing again with the load switches so that's why I've pulled config cell o and config cell 1 low with 100K resistor you could of course pull them down to ground just with a short so to speak but I always like to place resistors in the way in case I change my mind or I have to adapt something later on this way I
+
+00:12:44
+have a pad here which I can either then why a little jumper wire sold over to 313 Volts for example then we also have these non-rem or non-removable ports so non-rem 0 and non-rem1 and it turns out if I pull both of them low that means all the ports the downstream ports so all my USB a females are removable and and of course this is what I want because in this case I'm making USB hub where I can attach and plug in devices as I want so to speak therefore non-rem 0 and non-rem 1 are 18 and r19 are
+
+00:13:13
+pulling those both low that's pretty much all we need for our strapping options for this particular configuration and if we're not using an eprom the eprom connections aren't particularly difficult either and you can check out microchip's evaluation board if you want to learn more about that moving on we're finally getting to the device or Downstream ports of this Hub this means we have all these differential pairs so USB DN USB D plus as well as the enable signals for all of
+
+00:13:37
+our load switches and our over current sense input pins again coming from the load switches reminding ourselves from the block diagram this was this section on the right over here with our load switches enable and over current signals feeding the usb-a female connectors so the data connections simply go via ESD protection diodes again using the same package as with the host connection to our USB a female connections that's all there is to it same goes for one two three and four the power is not our main
+
+00:14:05
+five volt power because we're taking this for the load switches which I'm showing you just in just a second again Pi filter and you can see we have this fairly large capacitances now directly at the power pins of this USB a female connector 100 microfarads this Hub will then act as a host so to speak or an extension of the host we want to be able to supply 500 milliamps also with a large bulk decoupling capacitor as dictated by the USB standard so our load switch is up here there's four of them
+
+00:14:30
+one for each device connection we're taking a 5 volts filtered from the load switch bypass cap C6 and C7 in this case as directed by the datasheet of this load switch we have our enable signal which is logic high and we have our end full signal which is essentially a fault condition on over current condition signal now this signal for this particular I see this mic 2099 is open drain so it would require pull-up resistor which I've put here as a do not place the reason I put a do not place
+
+00:14:58
+here is because this over current signal feeds into the over current input pin of the USB hub IC now it turns out that his overcurrent signal pin contains internal pull-ups to 3.3 volts therefore we can omit these resistors the reason I've put them as do not place for demo board I always think that's a good idea in case you've misread something or similar on the side we have our output which then goes to the ports and once the output is on I like to indicate that with an LED for example in this demo board again
+
+00:15:25
+green diode current limiting resistor the last pin we haven't looked at is this I limit pin and as the name suggests the value of this resistor will change the maximum current that this IC this loads which will supply before giving an unfold condition or before clamping the current from the data sheet of this particular device very easy to find that for 330 Ohm resistor approximately we get a current limit of about 450 to 750 milliamps and of course there's going to be variations Within
+
+00:15:51
+These ICS but it's around the 500 milliamps we want so this part of the schematic is duplicated four times and the accurate power is then connected through a pi filter again to the USB a connections and that's all that pretty much is to it let's now talk about the PCB design aspect when you're implementing a USB hub IC such as this one I've made a very simple demo board this is four layers and I'd recommend going with at least four layers for a design like this and four layers is sufficient of course
+
+00:16:18
+depends on your other peripherals you have on your PCB as well but for this just making a simple breakout board for this so I have a host connection and then four device connections on the right hand side four layers is what I'd want two layers it'll be difficult to meet the controlled impedance requirements as well and four layers because of the smaller spacing between layers 1 and 2 and layers 3 and 4 will get better Emi and Si performance as well approved overview of the board we have the majority of the components
+
+00:16:44
+mounted on the top side although I do have some capacitors under this qfn which is this quad flat no lead package of the USB hub IC which is the center here we have some decoupling capacitors mounted on the bottom side and I'll show you why later on it is possible to put them on the top side however that makes routing out all of these parts and all these traces a lot more difficult for this fairly quick demonstration board this made my life a bit easier we have our centerpiece which is our USB hub the
+
+00:17:10
+USB 2514 by microchip connected to a host with ESD protection some filtering with a crystal over here we have the power section of five volt input DC Barrel Jack on the bottom left feeding through a pi filter into our ldr regulator and out of this USB hub we have then four data connections two ports one two three and four again ESD protection on each load switches as well as quite a lot of bypass capacitance 100 microfarads each on the power lines after the load switches so let's go through in more detail after this
+
+00:17:42
+overview for you to design layer stack manager we can look at the stack up with this PCB so how this PCB is built up and what layers I'm using my favorite and my preferred four layer Stack Up is have layer 1 signal with rooted power in this case rooted power is completely fine my first internal layer is ground then we have a thick core material than the third copper layer or the second inner layer is ground again and the bottom layer is signal again with rooted power this stack up I got from the PCB website
+
+00:18:10
+for the stack up or the standard stack ups for multi-layer pcbs and of course this will depend where you get this manufactured the stack up is important because we'll need this for our controlled impedance traces and we'll talk about that in just a second in essence for 1.6 millimeter PCB all I did was copy this information so copper thicknesses prepared thicknesses and types including the dielectric constants and so on it's all this information just transferred over like so the nice thing
+
+00:18:35
+about Autumn design is even though of course you could use other tools other impedance calculators is that the impedance calculator once you've entered your stacker information here I can go to the bottom tab click on impedance and then I can add various different impedance profiles and Alton designer includes a 2d field solver which calculates the required Trace widths or impedances all of my signal lines I typically like to root as 50 ohm control impedance unless they need to be specified otherwise so that's my first
+
+00:19:02
+unit I have here so single ended 50 ohms and a 10 turns out for this stack up I need about 0.17 millimeters to give myself 50 ohms single ended however for the USB differential pairs of course I need a differential control impedance and the USB standard indicates that there should be 90 ohms differential and 50 ohms signal ended the single ended impedance we can get of course from our single M50 so that sets the trace width so I've set that to 0.17 to give myself 50 ohm single ended but then the
+
+00:19:30
+differential impedance is determined secondly by the trace Gap so I've played around the trace Gap to give myself an impedance of about 90 ohms of course this will vary with manufacturing tolerances weave and so on but USB 2.0 isn't that particularly fast so as long as you're around 90 ohms this will work so to trace width 0.7 millimeters to give myself 50 ohm single ended and 0.22 millimeters Trace Gap so the spacing between the positive part and the negative part of my differential pair is
+
+00:19:57
+0.22 millimeters which gives me 90 ohms differential impedance I can use this then by going to the design rules then going to differential pair routing and saying for any differential pair because I only have USB differential pairs in this design I want to use my impedance profile which is diff90 therefore all of my traces you see here are rooted with 0.71 millimeter tracks and a spacing of 0.22 millimeters so now let's look at how I actually rooted these differential pairs given that we've now calculated
+
+00:20:24
+our controlled impedance we'll start on the host connector on the left hand side this is on the top layer our micro b connector notice that for micro b connectors you should leave a bit of an overhang because we have this lip typically we'd need to go over the board Edge so space this a tiny bit outside making sure I have enough clearance between this pad and the board Edge 0.4 millimeters at least is usually what I go for in any case we have the positive and negative part of this differential
+
+00:20:47
+pair we root out straight into the ESD protection and this is what should come first you can see I had to Branch out to get into these pads but this is completely fine this is a very small and short impedance discontinuity will not cause any problems at all on the other side of this ESD protection I wrote out down and into to the host connection of my USB hub IC over here you can see this little squiggle I have here and this is for intrapair differential length matching we need to match within between
+
+00:21:15
+the positive and negative part of a differential pair we should try and match these lengths or these times or delay times as close as possible in Alton designer on the bottom left if I click on the PCB panel then scroll down to USB host DN and DP I can highlight these connections and we can see because of this little squiggle I've added on one line I've matched the delay on the right side here both to about 114 picoseconds generally with differential pairs I try to match within 5 picoseconds depending on the protocol of
+
+00:21:44
+course now the matching between differential pairs for example between the host differential pair or any of these devices of course does not matter the most important thing here is that we match within so intrapair differential SKU matching on the other side of this USB qfn or USB hub I have my various ports I root out and I try to keep clearance between sensor to signals or between other signals so I could also root my differential pairs like so very close together but then you get crosstalk you get coupling between these
+
+00:22:12
+signals if you have the space of course try and use it space out as soon as you can and for each device halt I root again into the EST protection out very small distance between the EST protection and the connector as it should be and we can see that in 3D we have the connector straight to the ESD protection differential pair into the USB hub that's all there is to it keep in mind however we don't need to just think about the forward path we also need to think about the return path layer 2 underneath should be a solid
+
+00:22:40
+continuous ground plane that's why I have below layer one one dielectric space away I've got a solid return plane as you can see all the differential pair signals on any i o signal is routed directly above a ground plane or suitable reference plane the other i o signals for example the USB port power so for controlling the load switches aren't that critical I try to root out give myself some spacing again between i o lines even even though these might be a DC I always try to space out my lines
+
+00:23:08
+if I have the space what you can also see is when I'm using Vias to drop down to the bottom layer and then root along I'm also dropping ground veers you don't have to just think about the ground or the return path in on a 2d plane but what happens if you're switching from the first reference plane to the second reference plane one one layer one where routing signals here we're referencing layer 2 but on layer 4 We're referencing layer 3. to help this z-axis or this third dimension transition I place
+
+00:23:35
+what's known as a transovia close to any signal via of course in more dense design this becomes hard and harder to do but you can group for example several of these signal viewers with one transvere one grounded via so to speak the USB hub the remaining parts are simply the strapping resistors I have short connections to my strapping pin these aren't particularly critical what is critical however is my Bias Resistor which I try to place fairly close to this IC as well as this Crystal Connection over here in 3D we're coming
+
+00:24:03
+out as this these input and output lines are feedback resistor which is typically a do not place then we have a load capacitors routing in to our Crystal now this could be further away that will be fine but I'll try to keep my crystal and load caps fairly close to the relevant IC I don't really like the package pin out because we have the host differential pair pins right next to the crystal pins that's why as soon as we come out or in to this package with the differential pair pins I want to space
+
+00:24:30
+these away from these sensitive Crystal traces so try to give yourself maximum space given this not ideal pin out now we've looked at i o traces we have caused them to think about decoupling of this IC and as I said before I've placed all of my decoupling capacitors on the bottom of this IC and this is typically what I like to do with qfns even though this means double-sided assembly I predominantly do this because this gives me more routing space because I have to Fan out this fairly fine pitched qfn
+
+00:24:57
+this qfn has a pitch of about 0.5 millimeters and I want to make my life a bit easier that's why I can play CD coupling capacitors on the bottom side this is perfectly fine for such a comparatively slow system so I take for example a Power Pin or one of these filter pins very short and wide Trace directly into a via on the bottom side I come out of the Via wide Trace decoupling capacitor and then I use as my return connection so my ground Vias I use the ground viewers which are part of the qfn package trying to keep my Loop
+
+00:25:26
+areas as small as I can given the double-sided placement so short connection via short and white connection to the out of the coupling coaster ground connections directly to the qfn grounds that's my preferred way of rooting out qfns if I can do double outside at assembly when it comes to power routing from the DC Barrel Jack and routing power because this is a fairly low speed design even though it's USB high speed we don't have possibly fast Edge rates and Rigid power for this is completely fine and I've done this
+
+00:25:53
+many times using this particular IC I'm using power traces of about 0.7 millimeter width and this is because we want to carry a fairly considerable amount of current in certain places 2.5 amp especially this main five volt Trace here going along this is carrying all two and a half amps approximately therefore I used as usual the Saturn PCB design toolkit which is free to download I've used the conductor properties tab typed in a conductor width of 0.7 millimeters a temperature rise of 30
+
+00:26:21
+degrees I click solve we can see this Trace can carry two and a half amps for 30 degree temperature rise which I think is fairly reasonable given also this is the completely maximum load this would ever see therefore all rooted power and I did my routing of the power last a lot of it on the bottom side of this PCB all at 0.7 millimeter Trace width the traces which then go to the individual devices of course I can make thinner because each individual device only draws up to about 500 milliamps of current so
+
+00:26:50
+therefore I went with about 0.5 millimeters the remaining connections aren't that critical we have our load switches I try to place my Bypass or decoupling capacitors close to the relevant power pins with short and wide traces anytime I drop a via to ground or power hour I try to keep my Trace short and wide as possible but of course my V are not too close to the pad because that might cause solder wicking and assembly manufacturing problems so short wide Trace out a bit drop the Via down to a ground power plane then my power
+
+00:27:19
+routes through this Pi filter with this large decoupling or bypass capacitor into the Power Pin without USB a connections and I've just simply repeated that circuitry for all of these four device connections so there's not actually too much to it the main points being the controlled impedance differential pairs matching into repair spacing is the protection close to connectors rooting power with fairly wide traces using solid continuous ground planes and the usual PCB design aspects or best practices that you
+
+00:27:46
+should always adhere to you can also see I've filled in the top and bottom layers with a solid copper paw and this is connected to the ground net because I have then ground copper ports on layer 1 layer 2 layer 3 and layer 4. we can see all of these Vias are stitching videos I want all my planes connected together to give me the lowest inductance return path and connections I recently went to tools via stitching via shielding and added stitching to a net in this case the ground net to tie them all together
+
+00:28:15
+automatically for the sake of completeness even though this is just a USB demo board I've added some mounting holes and suitable positions and these are grounded I've added some silk screen indicating what all these connections do what port numbers they have revision numbers my initials my logo and so on it's always good to add this information to your silk screen to help the end user out or to help out during debugging other than that the shield connections are simply used wide traces again this
+
+00:28:40
+is a very generic guideline and I plan on making a video on grounding and shielding but for this I've just used a single capacitor to ground as we saw in the schematic just as a simple test hit this USB hub as a test I designed about two years ago and with micro USB connector I'm going to hook this up to my computer first of all let's look at the device manager we see I have a couple of hubs already connected but now let me just connect this Hub so now it's on and connected to my computer and we can see a third Hub
+
+00:29:08
+has appeared so now we can test it by connecting for example a dongle for example my wireless mouse and keyboard so I'll take it out of my computer and then I can plug this into any port I want for example I'll just use the first Port over here and now I can move for example my mouse again connected through this USB hub just to show that this simple configuration does actually work
+

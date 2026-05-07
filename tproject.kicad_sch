@@ -9632,9 +9632,52 @@
 			)
 		)
 	)
+	(sheet
+		(at 20 160)
+		(size 30 15)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.152)
+			(type default)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9fc96f67-0000-40fd-835f-e11000000001")
+		(property "Sheetname" "USB Hub"
+			(at 20 159.4615 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(bold yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "tproject-hub.kicad_sch"
+			(at 20 175.3846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "tproject"
+				(path "/6a5b46f1-62dd-49ff-8442-d9907adb115c"
+					(page "2")
+				)
+			)
+		)
+	)
 	(sheet_instances
 		(path "/"
 			(page "1")
+		)
+		(path "/9fc96f67-0000-40fd-835f-e11000000001"
+			(page "2")
 		)
 	)
 	(embedded_fonts no)
